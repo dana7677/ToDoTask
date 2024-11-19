@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".add_activity">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="25dp"
+        android:backgroundTint="@color/black">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="2.2"
+                android:text="New Task"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:textSize="20dp">
+
+            </TextView>
+
+            <EditText
+                android:id="@+id/nameTask_Text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="2.5"
+                android:text="Name Task"
+                android:textColor="@color/white"
+                android:textStyle="italic">
+
+            </EditText>
+
+            <EditText
+                android:id="@+id/descript_Text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textColor="@color/white"
+                android:text="Descript task"
+                android:layout_weight="2"
+                android:textStyle="italic">
+
+            </EditText>
+
+            <Button
+                android:id="@+id/add_button"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="2.5"
+                android:text="Add">
+
+
+            </Button>
+
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

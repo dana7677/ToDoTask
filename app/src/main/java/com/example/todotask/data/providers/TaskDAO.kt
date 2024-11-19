@@ -2,6 +2,7 @@ package com.example.todotask.data.providers
 
 import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.provider.BaseColumns
 import android.util.Log
@@ -25,6 +26,23 @@ class TaskDAO (val context: Context)
         return valuespass
     }
 
+    private fun getProjection(task:Task.Companion):Array<String>
+    {
+        val projection = arrayOf(Task.COLUMN_ID, Task.COLUMN_NAME,Task.COLUMN_DESCRIPTION, Task.COLUMN_DONE)
+
+        return projection
+    }
+
+    private fun returnTask(getcursor:Cursor):Task
+    {
+        val id = getcursor.getLong(getcursor.getColumnIndexOrThrow(Task.COLUMN_ID))
+        val name = getcursor.getString(getcursor.getColumnIndexOrThrow(Task.COLUMN_NAME))
+        val descript = getcursor.getString(getcursor.getColumnIndexOrThrow(Task.COLUMN_DESCRIPTION))
+        val done = getcursor.getInt(getcursor.getColumnIndexOrThrow(Task.COLUMN_DONE)) != 0
+
+        return Task(id,name,descript,done)
+    }
+
     fun open()
     {
         db=DataBaseManager(context).writableDatabase
@@ -39,13 +57,7 @@ class TaskDAO (val context: Context)
     {
 
         open()
-        val values=ContentValues().apply {
-
-            put(Task.COLUMN_NAME,task.name)
-            put(Task.COLUMN_DESCRIPTION,task.descript)
-            put(Task.COLUMN_DONE, task.done)
-
-        }
+        val values=getValues(task)
 
         try{
             val id=db.insert(Task.TABLE_NAME,null,values)
@@ -63,13 +75,7 @@ class TaskDAO (val context: Context)
     fun update(task: Task)
     {
         open()
-        val values=ContentValues().apply {
-
-            put(Task.COLUMN_NAME,task.name)
-            put(Task.COLUMN_DESCRIPTION,task.descript)
-            put(Task.COLUMN_DONE, task.done)
-
-        }
+        val values=getValues(task)
 
         try{
             val updatedRows=db.update(Task.TABLE_NAME, values, "${Task.COLUMN_ID} = ${task.id}", null)
@@ -100,8 +106,7 @@ class TaskDAO (val context: Context)
     {
         open()
 
-        val projection = arrayOf(Task.COLUMN_ID, Task.COLUMN_NAME,Task.COLUMN_DESCRIPTION, Task.COLUMN_DONE)
-
+        val projection = getProjection(Task)
 
         try {
             val cursor = db.query(
@@ -114,12 +119,10 @@ class TaskDAO (val context: Context)
                 null
             )
             if (cursor.moveToNext()) {
-                val id = cursor.getLong(cursor.getColumnIndexOrThrow(Task.COLUMN_ID))
-                val name = cursor.getString(cursor.getColumnIndexOrThrow(Task.COLUMN_NAME))
-                val descript = cursor.getString(cursor.getColumnIndexOrThrow(Task.COLUMN_DESCRIPTION))
-                val done = cursor.getInt(cursor.getColumnIndexOrThrow(Task.COLUMN_DONE)) != 0
 
-                return Task(id, name,descript, done)
+                val task=returnTask(cursor)
+
+                return task
             }
         }catch (e:Exception)
         {
@@ -138,8 +141,7 @@ class TaskDAO (val context: Context)
         open()
         var list:MutableList<Task> = mutableListOf()
 
-        val projection = arrayOf(Task.COLUMN_ID, Task.COLUMN_NAME,Task.COLUMN_DESCRIPTION, Task.COLUMN_DONE)
-
+        val projection = getProjection(Task)
 
         try {
             val cursor = db.query(
@@ -153,14 +155,10 @@ class TaskDAO (val context: Context)
             )
 
             while (cursor.moveToNext()) {
-                val id = cursor.getLong(cursor.getColumnIndexOrThrow(Task.COLUMN_ID))
-                val name = cursor.getString(cursor.getColumnIndexOrThrow(Task.COLUMN_NAME))
-                val descript = cursor.getString(cursor.getColumnIndexOrThrow(Task.COLUMN_DESCRIPTION))
-                val done = cursor.getInt(cursor.getColumnIndexOrThrow(Task.COLUMN_DONE)) != 0
 
-
-                val task=Task(id, name,descript, done)
+                val task=returnTask(cursor)
                 list.add(task)
+
             }
 
         }catch (e:Exception)
@@ -173,5 +171,21 @@ class TaskDAO (val context: Context)
 
         return list
 
+    }
+
+    fun deleteAll()
+    {
+        open()
+        try
+        {
+            val deleteItem=db.delete(Task.TABLE_NAME,null,null)
+
+        }catch (e:Exception)
+        {
+            Log.e("DB",e.stackTraceToString())
+        }
+        finally {
+            close()
+        }
     }
 }
