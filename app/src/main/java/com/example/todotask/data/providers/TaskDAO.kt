@@ -173,6 +173,22 @@ class TaskDAO (val context: Context)
 
     }
 
+    fun deleteCompleteTask()
+    {
+        open()
+        try
+        {
+
+            val deleteItem=db.delete(Task.TABLE_NAME,"${Task.COLUMN_DONE} = true",null)
+
+        }catch (e:Exception)
+        {
+            Log.e("DB",e.stackTraceToString())
+        }
+        finally {
+            close()
+        }
+    }
     fun deleteAll()
     {
         open()

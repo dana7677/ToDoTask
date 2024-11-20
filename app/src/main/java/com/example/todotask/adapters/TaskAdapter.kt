@@ -5,8 +5,9 @@ import android.view.ViewGroup
 
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todotask.data.Task
+import com.example.todotask.data.providers.TaskDAO
 import com.example.todotask.databinding.ViewTaskItemBinding
-
+import kotlinx.coroutines.delay
 
 
 class TaskAdapter(private var taskList:List<Task>,private val onItemClickListener: (Int) -> Unit):
@@ -17,6 +18,11 @@ class TaskAdapter(private var taskList:List<Task>,private val onItemClickListene
         this.taskList = filterList
         notifyDataSetChanged()
 
+    }
+
+    fun updateItems(items: List<Task>) {
+        this.taskList = items
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -51,10 +57,12 @@ class ViewHolder(private val binding: ViewTaskItemBinding) :
 {
         fun bind(task: Task, pos: Int) {
 
-            binding.txtName.setText(task.name)
-            //val context = itemView.context
-            //binding.heroeName.setText(heroData.nameHero)
-            //Picasso.get().load(heroData.urlImage.url).into(binding.imgHero)
+            binding.nameTextView.setText(task.name)
+            binding.doneCheckBox.isChecked=task.done
+
+
+            var checked =binding.doneCheckBox.isChecked
+
         }
         }
 

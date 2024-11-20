@@ -20,6 +20,8 @@ import com.example.todotask.databinding.ActivityAddBinding
 
 class MainActivity : AppCompatActivity() {
 
+
+
     lateinit var bindingMainActivity: ActivityMainBinding
     lateinit var adapter: TaskAdapter
     lateinit var taskList:List<Task>
@@ -32,15 +34,23 @@ class MainActivity : AppCompatActivity() {
         setContentView(bindingMainActivity.root)
 
         val taskDAO = TaskDAO(this)
-        taskDAO.insert(Task(-1, "Limpiar el coche", "primero se utiliza champu",false))
+
 
         taskList=taskDAO.findAll()
 
-        adapter = TaskAdapter(taskList){position->navigateToDetail(taskList[position])}
+        adapter = TaskAdapter(taskList){
+
+            //Cuando se de click al checkbox se ejecutara este codigo
+            val task = taskList[it]
+            task.done = !task.done //Si es + -> - y al reves - -> +
+            taskDAO.update(task)   //Updatear los valores
+            adapter.updateItems(taskList)
+        }
 
 
         bindingMainActivity.recyclerTask.adapter=adapter
         bindingMainActivity.recyclerTask.layoutManager = GridLayoutManager(this,1)
+
 
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -49,18 +59,35 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        //taskDAO.insert(Task(-1, "Limpiar el coche", "primero se utiliza champu",false))
-       // val task = taskDAO.findByID(1)!!
-        /*
-        task.done = true
+        bindingMainActivity.addTaskButton.setOnClickListener {
 
-        //taskDAO.deleteAll()
-        //taskDAO.delete(task)
+            val intent=Intent(this,add_activity::class.java)
 
-        val taskList = taskDAO.findAll()
-        for (task in taskList) {
-            println(task)
+            startActivity(intent)
+
         }
+        bindingMainActivity.clearButton.setOnClickListener {
+
+            taskDAO.deleteCompleteTask()
+            taskList=taskDAO.findAll()
+            adapter.updateItems(taskDAO.findAll())
+
+        }
+
+        /* Infoooo
+
+            taskDAO.insert(Task(-1, "Limpiar el coche", "primero se utiliza champu",false))
+            val task = taskDAO.findByID(1)!!
+
+            task.done = true
+
+            taskDAO.deleteAll()
+            taskDAO.delete(task)
+
+            val taskList = taskDAO.findAll()
+            for (task in taskList) {
+            println(task)
+             }
 
          */
 
@@ -86,19 +113,8 @@ class MainActivity : AppCompatActivity() {
 
             startActivity(intent)
         }
+
         return true
     }
-    fun navigateToDetail(taskSelected: Task) {
 
-
-        /*
-        val intent: Intent = Intent(this, selected_hero_activity::class.java)
-        intent.putExtra("extra_ID",heroSelected.numID)
-        intent.putExtra("extra_Name",heroSelected.nameHero)
-        intent.putExtra("extra_Url",heroSelected.urlImage.url)
-        startActivity(intent)
-         */
-
-
-    }
 }

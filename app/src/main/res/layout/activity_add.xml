@@ -38,6 +38,14 @@
                 android:textStyle="italic">
 
             </EditText>
+            <Button
+                android:id="@+id/buttton_alarma"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:text="Hora de Alarma">
+
+            </Button>
 
             <EditText
                 android:id="@+id/descript_Text"
@@ -49,6 +57,9 @@
                 android:textStyle="italic">
 
             </EditText>
+
+
+
 
             <Button
                 android:id="@+id/add_button"
