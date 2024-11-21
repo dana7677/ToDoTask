@@ -20,6 +20,7 @@ class TaskDAO (val context: Context)
 
             put(Task.COLUMN_NAME,taskpass.name)
             put(Task.COLUMN_DESCRIPTION,taskpass.descript)
+            put(Task.COLUMN_HOUR,taskpass.HourAlarm)
             put(Task.COLUMN_DONE, taskpass.done)
 
         }
@@ -28,7 +29,7 @@ class TaskDAO (val context: Context)
 
     private fun getProjection(task:Task.Companion):Array<String>
     {
-        val projection = arrayOf(Task.COLUMN_ID, Task.COLUMN_NAME,Task.COLUMN_DESCRIPTION, Task.COLUMN_DONE)
+        val projection = arrayOf(Task.COLUMN_ID, Task.COLUMN_NAME,Task.COLUMN_DESCRIPTION,Task.COLUMN_HOUR, Task.COLUMN_DONE)
 
         return projection
     }
@@ -38,9 +39,10 @@ class TaskDAO (val context: Context)
         val id = getcursor.getLong(getcursor.getColumnIndexOrThrow(Task.COLUMN_ID))
         val name = getcursor.getString(getcursor.getColumnIndexOrThrow(Task.COLUMN_NAME))
         val descript = getcursor.getString(getcursor.getColumnIndexOrThrow(Task.COLUMN_DESCRIPTION))
+        val hour = getcursor.getString(getcursor.getColumnIndexOrThrow(Task.COLUMN_HOUR))
         val done = getcursor.getInt(getcursor.getColumnIndexOrThrow(Task.COLUMN_DONE)) != 0
 
-        return Task(id,name,descript,done)
+        return Task(id,name,descript,hour,done)
     }
 
     fun open()

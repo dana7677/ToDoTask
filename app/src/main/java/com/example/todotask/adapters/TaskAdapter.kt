@@ -59,9 +59,9 @@ class ViewHolder(private val binding: ViewTaskItemBinding) :
 
             binding.nameTextView.setText(task.name)
             binding.doneCheckBox.isChecked=task.done
+            binding.hourTextView.setText(task.HourAlarm)
 
-
-            var checked =binding.doneCheckBox.isChecked
+           // var checked =binding.doneCheckBox.isChecked
 
         }
         }

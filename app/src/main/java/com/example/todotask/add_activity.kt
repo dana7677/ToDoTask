@@ -1,25 +1,33 @@
 package com.example.todotask
 
+import android.Manifest
 import android.app.AlarmManager
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.media.Ringtone
+import android.media.RingtoneManager
 import android.os.Bundle
-import android.view.Menu
 import android.view.MenuItem
+import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.SearchView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.todotask.data.Task
 import com.example.todotask.data.providers.TaskDAO
 import com.example.todotask.databinding.ActivityAddBinding
 import com.example.todotask.timer.AlarmNotification
-import com.example.todotask.timer.AlarmNotification.Companion.NOTIFICATION_ID
 import com.example.todotask.timer.TimerPickerFragment
 import java.util.Calendar
+
 
 class add_activity : AppCompatActivity() {
 
@@ -28,9 +36,15 @@ class add_activity : AppCompatActivity() {
         const val MY_CHANNEL_ID="myChannel"
     }
 
+
+        var taskID:Int=0
+    var totalTime:Int=0
     lateinit var bindingMainActivity:ActivityAddBinding
     lateinit var editableNameText: EditText
     lateinit var editableDescriptText: EditText
+    lateinit var horaTxt:String
+    lateinit var checkBoxAlarm:CheckBox
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -44,20 +58,29 @@ class add_activity : AppCompatActivity() {
             insets
         }
 
-        /*
+
+
         val taskDAO = TaskDAO(this)
-        //taskDAO.insert(Task(-1, "Limpiar el coche", "primero se utiliza champu",false))
-        val task = taskDAO.findByID(1)!!
-        task.done = true
 
-        taskDAO.deleteAll()
-        //taskDAO.delete(task)
+        //taskDAO.insert(Task(-1, editableNameText.getText().toString(), editableDescriptText.getText().toString(),"10:00",false))
+        //taskDAO.deleteAll()
+        //taskDAO.insert(Task(-1, "limpiame la casa","des","10:00",false))
 
+        /*
         val taskList = taskDAO.findAll()
         for (task in taskList) {
-            println(task)
+            println(task.id)
         }
          */
+
+
+
+        var size=taskDAO.findAll().size + 1
+
+        taskID=size
+
+        //taskDAO.findAll()
+
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -66,20 +89,35 @@ class add_activity : AppCompatActivity() {
 
     }
 
+    private fun onPressedAddButton()
+    {
+        val taskDAO = TaskDAO(this)
+
+
+        if(bindingMainActivity.CheckedAlarm.isChecked==true)
+        {
+            scheduleNotification(totalTime)
+        }
+        taskDAO.insert(Task(-1, editableNameText.getText().toString(), editableDescriptText.getText().toString(),"10:00",false))
+        finish()
+
+    }
+
 
 
     private fun onCreateoptions()
     {
-        println("He pasado por aqui")
+        val taskDAO = TaskDAO(this)
+
         bindingMainActivity.addButton.setOnClickListener {
-        println("He pasado por aqui 2")
+
+            onPressedAddButton()
+
         }
 
 
         editableNameText=bindingMainActivity.nameTaskText
-        editableDescriptText=bindingMainActivity.descriptText
-        val taskDAO = TaskDAO(this)
-        taskDAO.insert(Task(-1, editableNameText.getText().toString(), editableDescriptText.getText().toString(),false))
+        editableDescriptText=bindingMainActivity.TextInputValue
 
         //Print
         val taskList = taskDAO.findAll()
@@ -90,66 +128,115 @@ class add_activity : AppCompatActivity() {
 
 
         bindingMainActivity.butttonAlarma.setOnClickListener {
+            setPermissionNotification()
             showTimeDailog()
         }
 
 
     }
 
+    private fun setPermissionNotification()
+    {
+        //Checking Permission of Notification == TRUE
+        val permissionState =
+            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+        // If the permission is not granted, request it.
+        // If the permission is not granted, request it.
+        if (permissionState == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                1
+            )
+        }
+
+    }
+
     private fun scheduleNotification(timeAlarm:Int) {
 
 
-        /*
+        //Creating a notification channel
+        val channel = NotificationChannel(MY_CHANNEL_ID, "Recordatorios", NotificationManager.IMPORTANCE_HIGH)
+        val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        manager.createNotificationChannel(channel)
+
+        //Seteamos Notifiacion ID
+       // taskID=bindingMainActivity.nameTaskText.toString()
+
         val intent = Intent(applicationContext, AlarmNotification::class.java)
+
+        intent.putExtra("Tittle_Task",editableNameText.getText().toString())
+        intent.putExtra("Descript_Task",editableDescriptText.getText().toString())
+
+
         val pendingIntent = PendingIntent.getBroadcast(
             applicationContext,
-            NOTIFICATION_ID,
+            taskID,
             intent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, Calendar.getInstance().timeInMillis + timeAlarm, pendingIntent)
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, Calendar.getInstance().timeInMillis + 10000, pendingIntent)
+        //alarmManager.setExact(AlarmManager.RTC_WAKEUP, Calendar.getInstance().timeInMillis + timeAlarm, pendingIntent)
 
 
-         */
+
     }
 
 
     private fun showTimeDailog()
     {
 
-
         val timerPicker=TimerPickerFragment{onTimeSelected(it)}
         timerPicker.show(supportFragmentManager,"time")
-
-
-
 
     }
     private fun onTimeSelected(time:String)
     {
 
 
+        //val modifiedString = time.replace(":", "")
 
         bindingMainActivity.butttonAlarma.setText(time)
-
-        //val modifiedString = time.replace(":", "")
 
         val words = time.split(":")
 
         var hourFirst=words[0].toInt()
         var minutesFirst=words[1].toInt()
 
-        var Hours=(Calendar.HOUR_OF_DAY)-hourFirst
+        var totalTimepass=  minutesFirst * 60000
 
-      // var valuealarm= modifiedString.toInt()
+        println(hourFirst)
+        var Hours=0
 
-        //Calendar.HOUR_OF_DAY-
-        //println(valuealarm)
-        //Hora Seleccionada.
+        if(Calendar.HOUR_OF_DAY >hourFirst)
+        {
+            Hours=(hourFirst+24)-(Calendar.HOUR_OF_DAY)
+        }
+        else
+        {
+            Hours=hourFirst-(Calendar.HOUR_OF_DAY)
+        }
+
+        println(Hours)
+
+        Hours=Hours*60//Para sacar los minutos
+
+        Hours=Hours*60000 //Para sacar los milisegundos
+
+        totalTimepass=totalTimepass+Hours //Sumando las horas y los minutos
+
+
+        totalTime=totalTimepass
+
+        //Seteando la alarma con sus horas
+        //DEBUG
+        println(Hours)
+        println(totalTimepass)
 
     }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         when(item.itemId)
@@ -162,4 +249,23 @@ class add_activity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
+
+
+    //Como Ejecutar un Sonido
+
+    /*
+    private fun playRingTone()
+    {
+        try{
+            val notification= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+            val track= RingtoneManager.getRingtone(applicationContext,notification)
+            track.play()
+
+        }catch (e:Exception)
+        {
+            Toast.makeText(this,"Failed To Load Sound",Toast.LENGTH_SHORT).show()
+        }
+    }
+     */
+
 }

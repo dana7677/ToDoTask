@@ -20,8 +20,6 @@ import com.example.todotask.databinding.ActivityAddBinding
 
 class MainActivity : AppCompatActivity() {
 
-
-
     lateinit var bindingMainActivity: ActivityMainBinding
     lateinit var adapter: TaskAdapter
     lateinit var taskList:List<Task>
@@ -35,8 +33,11 @@ class MainActivity : AppCompatActivity() {
 
         val taskDAO = TaskDAO(this)
 
-
+        //taskDAO.insert(Task(-1,"limpia el coche","Para limpiarlo bien debes hacer...","10:00",false))
         taskList=taskDAO.findAll()
+
+        //Solo Ejecutar la primera Vez
+        //taskDAO.deleteAll()
 
         adapter = TaskAdapter(taskList){
 
