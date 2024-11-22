@@ -8,8 +8,10 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.MediaPlayer
 import android.media.Ringtone
 import android.media.RingtoneManager
+import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.CheckBox
@@ -27,6 +29,7 @@ import com.example.todotask.databinding.ActivityAddBinding
 import com.example.todotask.timer.AlarmNotification
 import com.example.todotask.timer.TimerPickerFragment
 import java.util.Calendar
+import java.util.TimeZone
 
 
 class add_activity : AppCompatActivity() {
@@ -62,24 +65,11 @@ class add_activity : AppCompatActivity() {
 
         val taskDAO = TaskDAO(this)
 
-        //taskDAO.insert(Task(-1, editableNameText.getText().toString(), editableDescriptText.getText().toString(),"10:00",false))
-        //taskDAO.deleteAll()
-        //taskDAO.insert(Task(-1, "limpiame la casa","des","10:00",false))
-
-        /*
-        val taskList = taskDAO.findAll()
-        for (task in taskList) {
-            println(task.id)
-        }
-         */
-
 
 
         var size=taskDAO.findAll().size + 1
 
         taskID=size
-
-        //taskDAO.findAll()
 
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -97,8 +87,13 @@ class add_activity : AppCompatActivity() {
         if(bindingMainActivity.CheckedAlarm.isChecked==true)
         {
             scheduleNotification(totalTime)
+
+            taskDAO.insert(Task(-1, editableNameText.getText().toString(), editableDescriptText.getText().toString(),horaTxt,false))
         }
-        taskDAO.insert(Task(-1, editableNameText.getText().toString(), editableDescriptText.getText().toString(),"10:00",false))
+        else
+        {
+            taskDAO.insert(Task(-1, editableNameText.getText().toString(), editableDescriptText.getText().toString(),"",false))
+        }
         finish()
 
     }
@@ -177,8 +172,15 @@ class add_activity : AppCompatActivity() {
         )
 
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, Calendar.getInstance().timeInMillis + 10000, pendingIntent)
-        //alarmManager.setExact(AlarmManager.RTC_WAKEUP, Calendar.getInstance().timeInMillis + timeAlarm, pendingIntent)
+
+
+        //For Testing 10 sec outs notification
+
+        //alarmManager.setExact(AlarmManager.RTC_WAKEUP, Calendar.getInstance().timeInMillis + 10000, pendingIntent)
+
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, Calendar.getInstance().timeInMillis + timeAlarm, pendingIntent)
+
+
 
 
 
@@ -196,7 +198,7 @@ class add_activity : AppCompatActivity() {
     {
 
 
-        //val modifiedString = time.replace(":", "")
+        horaTxt=time
 
         bindingMainActivity.butttonAlarma.setText(time)
 
@@ -210,13 +212,22 @@ class add_activity : AppCompatActivity() {
         println(hourFirst)
         var Hours=0
 
-        if(Calendar.HOUR_OF_DAY >hourFirst)
+        var calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Madrid"))
+
+
+        if(calendar.get(Calendar.HOUR_OF_DAY) >hourFirst)
         {
-            Hours=(hourFirst+24)-(Calendar.HOUR_OF_DAY)
+
+            //For testing
+            //Toast.makeText(this, "${calendar.get(Calendar.HOUR_OF_DAY)}", Toast.LENGTH_SHORT).show()
+
+
+            Hours=(hourFirst+24)-calendar.get(Calendar.HOUR_OF_DAY)
+
         }
         else
         {
-            Hours=hourFirst-(Calendar.HOUR_OF_DAY)
+            Hours=hourFirst-calendar.get(Calendar.HOUR_OF_DAY)
         }
 
         println(Hours)
@@ -250,22 +261,17 @@ class add_activity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-
-    //Como Ejecutar un Sonido
-
-    /*
     private fun playRingTone()
     {
         try{
-            val notification= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-            val track= RingtoneManager.getRingtone(applicationContext,notification)
-            track.play()
+            val soundPrueba = Uri.parse("android.resource://${this.packageName}/raw/cs_bomb")
+
+            MediaPlayer.create(this,soundPrueba).start()
 
         }catch (e:Exception)
         {
             Toast.makeText(this,"Failed To Load Sound",Toast.LENGTH_SHORT).show()
         }
     }
-     */
 
 }

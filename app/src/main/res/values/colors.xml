@@ -2,4 +2,10 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="card_lowTime">#4DFF0000</color>
+    <color name="card_MiddleTime">#80FFC800</color>
+    <color name="card_HighTime">#805AFF00</color>
+    <color name="card_ExtraTime">#00FFC3</color>
+
 </resources>

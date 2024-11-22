@@ -96,6 +96,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
 
+        val taskDAO = TaskDAO(this)
+        taskList=taskDAO.findAll()
+        adapter.updateItems(taskDAO.findAll())
         adapter.notifyDataSetChanged()
 
         super.onResume()

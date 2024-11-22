@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">ToDoTask</string>
+    <string name="hora_text">Hora seleccionada</string>
 </resources>
