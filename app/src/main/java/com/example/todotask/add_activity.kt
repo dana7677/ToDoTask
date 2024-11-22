@@ -88,6 +88,8 @@ class add_activity : AppCompatActivity() {
         {
             scheduleNotification(totalTime)
 
+            playRingTone()
+
             taskDAO.insert(Task(-1, editableNameText.getText().toString(), editableDescriptText.getText().toString(),horaTxt,false))
         }
         else
